@@ -26,14 +26,33 @@ class ContactoController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($contacto);
-            $this->entityManager->flush();
+            // Obtener el correo electrónico del formulario
+            $correo = $form->get('correo')->getData();
 
+            // Obtener la fecha actual sin hora
+            $fechaHoy = new \DateTime();
+            $fechaHoy->setTime(0, 0, 0);
 
-            $this->addFlash('success', 'Tu mensaje ha sido enviado con éxito.');
+            // Verificar si ya existe un mensaje de este correo en la fecha actual
+            $mensajeExistente = $this->entityManager->getRepository(Contacto::class)
+                ->findOneBy([
+                    'correo' => $correo,
+                    'fechaEnvio' => $fechaHoy
+                ]);
 
+            if ($mensajeExistente) {
+                // Agregar un mensaje de error si ya se envió un mensaje hoy
+                $this->addFlash('error', 'Ya has enviado un mensaje hoy.');
+            } else {
+                // Si no hay mensajes previos en la fecha actual, procesar el nuevo mensaje
+                $contacto->setFechaEnvio(new \DateTime());
+                $this->entityManager->persist($contacto);
+                $this->entityManager->flush();
 
-            return $this->redirectToRoute('inicio');
+                // Redirigir o mostrar un mensaje de éxito
+                $this->addFlash('success', 'Tu mensaje ha sido enviado con éxito.');
+                return $this->redirectToRoute('inicio');
+            }
         }
 
         return $this->render('contacto/index.html.twig', [
