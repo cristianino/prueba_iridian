@@ -13,19 +13,26 @@ class AreaDeContacto
     #[ORM\Column]
     private ?int $id = null;
 
-    /** @ORM\Column(type="string") */
-    private $nombre;
+    #[ORM\Column(type: 'string')]
+    private string $nombre;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public  function getNombre() {
+    public  function getNombre(): string
+    {
         return $this->nombre;
     }
 
-    public  function setNombre($nombre) {
+    public  function setNombre($nombre)
+    {
         $this->nombre = $nombre;
+    }
+
+    public function __toString()
+    {
+        return $this->nombre;
     }
 }

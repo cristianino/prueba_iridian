@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Contacto;
+use App\Form\ContactoType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,7 +52,7 @@ class ContactoController extends AbstractController
 
                 // Redirigir o mostrar un mensaje de éxito
                 $this->addFlash('success', 'Tu mensaje ha sido enviado con éxito.');
-                return $this->redirectToRoute('inicio');
+                //return $this->redirectToRoute('inicio');
             }
         }
 

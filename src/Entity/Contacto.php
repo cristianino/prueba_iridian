@@ -13,29 +13,27 @@ class Contacto
     #[ORM\Column]
     private ?int $id = null;
 
-    /** @ORM\Column(type="string") */
-    private $nombre;
+    #[ORM\Column(type: 'string')]
+    private string $nombre;
 
-    /** @ORM\Column(type="string") */
-    private $apellido;
+    #[ORM\Column(type: 'string')]
+    private string $apellido;
 
-    /** @ORM\Column(type="string") */
-    private $correo;
+    #[ORM\Column(type: 'string')]
+    private string $correo;
 
-    /** @ORM\Column(type="string") */
-    private $celular;
+    #[ORM\Column(type: 'string')]
+    private string $celular;
 
-    /** @ORM\Column(type="datetime") */
-    private $fechaEnvio;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $fechaEnvio;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\AreaDeContacto")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $areaDeContacto;
+    #[ORM\ManyToOne(targetEntity: AreaDeContacto::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private AreaDeContacto $areaDeContacto;
 
-    /** @ORM\Column(type="text") */
-    private $mensaje;
+    #[ORM\Column(type: 'text')]
+    private string $mensaje;
 
     public function getNombre(): ?string
     {
@@ -78,6 +76,17 @@ class Contacto
     public function setCelular(string $celular): self
     {
         $this->celular = $celular;
+        return $this;
+    }
+
+    public function getMensaje(): ?string
+    {
+        return $this->mensaje;
+    }
+
+    public function setMensaje(string $mensaje): self
+    {
+        $this->mensaje = $mensaje;
         return $this;
     }
 
