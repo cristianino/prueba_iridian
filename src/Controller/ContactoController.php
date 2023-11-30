@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\AreaDeContacto;
 use App\Entity\Contacto;
 use App\Form\ContactoType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,10 +61,16 @@ class ContactoController extends AbstractController
     public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         try {
-            $contacto = $serializer->deserialize($request->getContent(), Contacto::class, 'json');
+            // Deserializa Contacto sin incluir areaDeContacto
+            $contacto = $serializer->deserialize($request->getContent(), Contacto::class, 'json', ['ignored_attributes' => ['areaDeContacto']]);
+
+            // Obtén el ID de AreaDeContacto del JSON
+            $data = json_decode($request->getContent(), true);
+            $areaDeContactoId = $data['areaDeContacto'] ?? null;
 
             $correo = $contacto->getCorreo();
             $fechaActual = new \DateTime();
+            $fechaActual->setTime(0, 0, 0);
             $contactoExistente = $this->entityManager->getRepository(Contacto::class)
                 ->findOneBy([
                     'correo' => $correo,
@@ -73,6 +80,13 @@ class ContactoController extends AbstractController
             if ($contactoExistente) {
                 return $this->json(['error' => 'Solo puedes enviar un mensaje por día.'], Response::HTTP_BAD_REQUEST);
             }
+
+            $areaDeContacto = $entityManager->getRepository(AreaDeContacto::class)->find($areaDeContactoId);
+            if (!$areaDeContacto) {
+                return $this->json(['error' => 'Área de contacto no encontrada.'], Response::HTTP_BAD_REQUEST);
+            }
+            $contacto->setAreaDeContacto($areaDeContacto);
+            $contacto->setFechaEnvio(new \DateTime());
 
 
             $errors = $validator->validate($contacto);

@@ -14,7 +14,7 @@ class AreaDeContacto
     private ?int $id = null;
 
     #[ORM\Column(type: 'string')]
-    private string $nombre;
+    private string $nombre = '';
 
     public function getId(): ?int
     {
